@@ -1,0 +1,62 @@
+!ROUTER 16
+enable
+config t 
+hostname R16
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int s0/2/0
+ip add 5.5.5.61 255.255.255.252
+no shut
+
+int g0/0/0
+ip add 5.5.5.65 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 16.16.16.16
+network 5.5.5.60 0.0.0.3 area 0
+network 5.5.5.64 0.0.0.3 area 0
+
+
+!ROUTER 17
+enable
+config t 
+hostname R17
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/1
+ip add 5.5.5.66 255.255.255.252
+no shut
+
+int g0/0/0
+ip add 5.5.5.69 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 17.17.17.17
+network 5.5.5.64 0.0.0.3 area 0
+network 5.5.5.68 0.0.0.3 area 0
+
+!ROUTER 18
+enable
+config t 
+hostname R18
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/1
+ip add 5.5.5.70 255.255.255.252
+no shut
+
+int s0/2/0
+ip add 5.5.5.73 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 18.18.18.18
+network 5.5.5.68 0.0.0.3 area 0
+network 5.5.5.72 0.0.0.3 area 0
+
+
+
+
+
