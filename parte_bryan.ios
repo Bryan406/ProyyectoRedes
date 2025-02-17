@@ -1,9 +1,57 @@
+R1
+enable
+config t 
+hostname R1
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/1
+ip add 5.5.5.1 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 1.1.1.1
+network 5.5.5.0 0.0.0.3 area 0
+
+R7
+enable
+config t 
+hostname R7
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/0
+ip add 5.5.5.21 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 7.7.7.7
+network 5.5.5.20 0.0.0.3 area 0
+
+R15
+enable
+config t 
+hostname R15
+enable secret ESPE
+banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/0
+ip add 5.5.5.58 255.255.255.252
+no shut
+exit
+router ospf 1
+router-id 15.15.15.15
+network 5.5.5.56 0.0.0.3 area 0
+
+
+
 R2
 enable
 config t 
 hostname R2
 enable secret ESPE
 banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
+int g0/0/0
+ip add 5.5.5.2 255.255.255.252
+no shut
+
 int g0/0/1
 ip add 5.5.5.5 255.255.255.252
 no shut
@@ -19,7 +67,7 @@ no shut
 int s0/2/0
 ip add 5.5.5.72 255.255.255.252
 Bad mask /30 for address 5.5.5.72
-R2(config-if)#no shut
+no shut
 
 exit
 router ospf 1
@@ -28,7 +76,7 @@ network 5.5.5.36 0.0.0.3 area 0
 network 5.5.5.4 0.0.0.3 area 0
 network 5.5.5.40 0.0.0.3 area 0
 network 5.5.5.72 0.0.0.3 area 0
-networ 5.5.5.0 0.0.0.3 area 0
+network 5.5.5.0 0.0.0.3 area 0
 do wr
 exit
 

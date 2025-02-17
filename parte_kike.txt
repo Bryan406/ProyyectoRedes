@@ -55,7 +55,7 @@ router-id 13.13.13.13
 network 5.5.5.48 0.0.0.3 area 0
 network 5.5.5.52 0.0.0.3 area 0
 
-!R14
+R14
 enable
 config t 
 hostname R14
