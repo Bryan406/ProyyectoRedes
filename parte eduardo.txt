@@ -5,7 +5,7 @@ hostname R16
 enable secret ESPE
 banner motd $--------------------------------------------------------------NO INGRESE SIN AUTORIZACION                                          Colegio Tecnico Salesiano Don Bosco                             ----------------------------------------------$
 int s0/2/0
-ip add 5.5.5.61 255.255.255.252
+ip add 5.5.5.62 255.255.255.252
 no shut
 
 int g0/0/0
@@ -48,7 +48,7 @@ ip add 5.5.5.70 255.255.255.252
 no shut
 
 int s0/2/0
-ip add 5.5.5.73 255.255.255.252
+ip add 5.5.5.74 255.255.255.252
 no shut
 exit
 router ospf 1
