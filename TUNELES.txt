@@ -1,0 +1,17 @@
+R1
+int tunnel 1
+tunnel source g0/0/1
+tunnel destination 5.5.5.58
+ip add 172.16.10.1 255.255.255.252
+exit
+
+
+R7
+
+
+R15
+int tunnel 1
+tunnel source g0/0/0
+tunnel destination 5.5.5.1
+ip add 172.16.10.2 255.255.255.252
+exit
