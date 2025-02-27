@@ -1,0 +1,294 @@
+EN CISCO PACKET TRACER REALIZA LA SIGUIENTE RED SERA PARA LA SIGUIENTE SUCURSAL DE CUENCA CON LA SIGUIENTE IMFORMACIÒN:
+
+Rango de IP: 192.168.3.0/26 
+IP de Gateway:192.168.3.1 
+Máscara de Subred : 255.255.255.192
+Dispositivos Estimados: 24 empleados + 240 
+estudiantes
+
+cada vlan tiene el siguiente nombre:
+
+▪ Departamento de pastoral
+▪ Departamento académico
+▪ Departamento de seguridad y salud
+▪ Departamento sociocultural
+
+USA EL MODELO DE LA MATRIZ PARA HACER LA SUCURSAL EN CISCO PACKET TRACER:
+
+!s1
+enable
+config t
+hostname s1
+banner motd $
+-----------------------------------------
+|  Acceso solo a personal autorizado    |
+-----------------------------------------
+$
+vlan 10
+ name Pastoral
+vlan 20
+ name Academico
+vlan 30
+ name Seguridad_Salud
+vlan 40
+ name Sociocultural
+vlan 50
+ name Deportes
+vlan 60
+ name Data_Center
+vlan 70
+ name Red_Publica
+exit
+int range fa0/5 -11
+ switchport mode access
+ switchport access vlan 10
+exit
+int range fa0/12 -24
+ switchport mode access
+ switchport access vlan 20
+exit
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 777
+do wr
+end
+show vlan brief
+
+!s2
+enable
+config t
+hostname s2
+banner motd $
+-----------------------------------------
+|  Acceso solo a personal autorizado    |
+-----------------------------------------
+$
+vlan 10
+ name Pastoral
+vlan 20
+ name Academico
+vlan 30
+ name Seguridad_Salud
+vlan 40
+ name Sociocultural
+vlan 50
+ name Deportes
+vlan 60
+ name Data_Center
+vlan 70
+ name Red_Publica
+exit
+int range fa0/5 -11
+ switchport mode access
+ switchport access vlan 20
+exit
+int range fa0/12 -19
+ switchport mode access
+ switchport access vlan 30
+exit
+int range fa0/20 -24
+ switchport mode access
+ switchport access vlan 40
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 777
+do wr
+end
+show vlan brief
+
+!s3
+enable
+config t
+hostname s3
+banner motd $
+-----------------------------------------
+|  Acceso solo a personal autorizado    |
+-----------------------------------------
+$
+vlan 10
+ name Pastoral
+vlan 20
+ name Academico
+vlan 30
+ name Seguridad_Salud
+vlan 40
+ name Sociocultural
+vlan 50
+ name Deportes
+vlan 60
+ name Data_Center
+vlan 70
+ name Red_Publica
+exit
+int range fa0/5 -10
+ switchport mode access
+ switchport access vlan 50
+exit
+int range fa0/11 -20
+ switchport mode access
+ switchport access vlan 60
+exit
+int range fa0/21 -24
+ switchport mode access
+ switchport access vlan 70
+exit
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 777
+do wr
+end
+show vlan brief
+
+!switch_multicapa
+enable
+config t
+hostname MLS
+banner motd $
+-----------------------------------------
+|  Acceso solo a personal autorizado    |
+-----------------------------------------
+$
+vlan 10
+ name Pastoral
+vlan 20
+ name Academico
+vlan 30
+ name Seguridad_Salud
+vlan 40
+ name Sociocultural
+vlan 50
+ name Deportes
+vlan 60
+ name Data_Center
+vlan 70
+ name Red_Publica
+exit
+interface range fa0/1 -5
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 777
+exit
+ip routing
+int vlan 10
+ ip address 192.168.3.65 255.255.255.240
+ ip helper-address 192.168.3.98
+ no shutdown
+exit
+int vlan 20
+ ip address 192.168.3.1 255.255.255.224
+ ip helper-address 192.168.3.98
+ no shutdown
+exit
+int vlan 30
+ ip address 192.168.3.49 255.255.255.240
+ ip helper-address 192.168.3.98 
+ no shutdown
+exit
+int vlan 40
+ ip address 192.168.3.89 255.255.255.248
+ ip helper-address 192.168.3.98 
+ no shutdown
+exit
+int vlan 50
+ ip address 192.168.3.81 255.255.255.248
+ ip helper-address 192.168.3.98 
+ no shutdown
+exit
+int vlan 60
+ ip address 192.168.3.33 255.255.255.240
+ no shutdown
+exit
+int vlan 70
+ ip address 192.168.1.1 255.255.254.0
+ ip helper-address 192.168.3.98
+ no shutdown
+exit  
+int g0/1
+ no switchport
+ ip address 192.168.3.97 255.255.255.252
+ no shutdown
+exit
+router eigrp 1
+ network 192.168.3.64 0.0.0.15
+ network 192.168.3.0 0.0.0.31
+ network 192.168.3.48 0.0.0.15
+ network 192.168.3.88 0.0.0.7
+ network 192.168.3.80 0.0.0.7
+ network 192.168.3.32 0.0.0.15
+ network 192.168.1.0 0.0.1.255
+ network 192.168.3.96 0.0.0.3
+ no auto-summary
+ passive-interface vlan 10
+ passive-interface vlan 20
+ passive-interface vlan 30
+ passive-interface vlan 40
+ passive-interface vlan 50
+ passive-interface vlan 60
+ passive-interface vlan 70
+exit
+do wr
+end
+show ip int brief
+show vlan brief
+
+!r1
+enable
+config t
+hostname r1
+interface g0/0/1
+ ip address 192.168.3.98 255.255.255.252
+ no shutdown
+exit
+router eigrp 1
+ network 192.168.3.96 0.0.0.3
+ no auto-summary
+exit
+do wr
+end
+show ip int brief
+show ip route
+show ip eigrp neighbors
+config t
+ip dhcp excluded-address 192.168.3.65
+ip dhcp excluded-address 192.168.3.1
+ip dhcp excluded-address 192.168.3.49
+ip dhcp excluded-address 192.168.3.89
+ip dhcp excluded-address 192.168.3.81
+ip dhcp excluded-address 192.168.1.1
+ip dhcp pool VLAN10
+ network 192.168.3.64 255.255.255.240
+ default-router 192.168.3.65
+ dns-server 192.168.3.35
+exit
+ip dhcp pool VLAN20
+ network 192.168.3.0 255.255.255.224
+ default-router 192.168.3.1
+ dns-server 192.168.3.35
+exit
+ip dhcp pool VLAN30
+ network 192.168.3.48 255.255.255.240
+ default-router 192.168.3.49
+ dns-server 192.168.3.35
+exit
+ip dhcp pool VLAN40
+ network 192.168.3.88 255.255.255.248
+ default-router 192.168.3.89
+ dns-server 192.168.3.35
+exit
+ip dhcp pool VLAN50
+ network 192.168.3.80 255.255.255.248
+ default-router 192.168.3.81
+ dns-server 192.168.3.35
+exit
+ip dhcp pool VLAN70
+ network 192.168.1.0 255.255.254.0
+ default-router 192.168.1.1
+ dns-server 192.168.3.35
+exit
+do wr
+end 
+show ip dhcp pool
+show ip dhcp binding 
+
+
+EN LA SIGUIENTE FOTO ESTA ESTA EL ESQUEMA DE LA RED
