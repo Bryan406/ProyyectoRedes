@@ -1,0 +1,184 @@
+S2
+enable
+config t
+hostname S2
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+vlan 10
+name PASTORAL
+exit
+vlan 20
+name ACADEMICO
+exit
+interface range fa0/10-19
+switchport mode access
+switchport access vlan 10
+exit
+interface range fa0/20-24
+switchport mode access
+switchport access vlan 20
+exit
+interface GigabitEthernet0/1
+switchport mode trunk
+switchport trunk allowed vlan 10,20
+exit
+exit
+write memory
+exit
+
+
+Router 7
+
+enable
+config t
+hostname R7
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+interface GigabitEthernet0/0/1
+ip address 192.168.2.1 255.255.255.252
+no shutdown
+exit
+router eigrp 1
+network 192.168.2.0 0.0.0.3
+no auto-summary
+exit
+exit
+write memory
+exit
+
+
+Router 19
+
+enable
+config t
+hostname R19
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+interface GigabitEthernet0/0/0
+ip address 192.168.2.2 255.255.255.252
+no shutdown
+exit
+interface GigabitEthernet0/0/1
+ip address 192.168.2.193 255.255.255.192
+no shutdown
+exit
+interface Serial0/1/0
+ip address 192.168.2.5 255.255.255.252
+no shutdown
+exit
+router eigrp 1
+network 192.168.2.0 0.0.0.255
+no auto-summary
+exit
+exit
+write memory
+exit
+
+
+Router 20
+
+enable
+config t
+hostname R20
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+interface Serial0/1/0
+ip address 192.168.2.6 255.255.255.252
+no shutdown
+exit
+interface GigabitEthernet0/0/0.10
+encapsulation dot1Q 10
+ip address 192.168.2.65 255.255.255.192
+exit
+interface GigabitEthernet0/0/0.20
+encapsulation dot1Q 20
+ip address 192.168.2.129 255.255.255.192
+exit
+interface GigabitEthernet0/0/0
+no shutdown
+exit
+router eigrp 1
+network 192.168.2.0 0.0.0.255
+no auto-summary
+exit
+exit
+write memory
+exit
+
+
+Router 20 DHCP
+enable
+config t
+hostname R20
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+ip dhcp excluded-address 192.168.2.65 192.168.2.70
+ip dhcp excluded-address 192.168.2.129 192.168.2.134
+
+ip dhcp pool VLAN10
+network 192.168.2.64 255.255.255.192
+default-router 192.168.2.65
+dns-server 192.168.3.35
+exit
+
+ip dhcp pool VLAN20
+network 192.168.2.128 255.255.255.192
+default-router 192.168.2.129
+dns-server 192.168.3.35
+exit
+
+write memory
+exit
+
+
+Router 19 DHCP
+
+enable
+config t
+hostname R19
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+ip dhcp excluded-address 192.168.2.193 192.168.2.198
+ip dhcp pool SEGURIDAD_SALUD
+network 192.168.2.192 255.255.255.192
+default-router 192.168.2.193
+dns-server 192.168.3.35
+exit
+write memory
+exit
+
+
+! R7  hago esto para que los dos protocolos de enrutamiento se puedan comunicar
+
+enable
+config t
+router eigrp 1
+redistribute ospf 1 metric 10000 100 255 1 1500
+exit
+
+router ospf 1
+redistribute eigrp 1 subnets
+exit
+
+router ospf 1
+network 172.16.10.4 0.0.0.3 area 0
+network 172.16.10.8 0.0.0.3 area 0
+exit
