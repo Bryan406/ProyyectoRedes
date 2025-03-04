@@ -218,12 +218,14 @@ show vlan brief
 enable
 config t
 hostname r1
-interface g0/0/1
+interface g0/0/0
  ip address 192.168.3.98 255.255.255.252
  no shutdown
 exit
 router eigrp 1
  network 192.168.3.96 0.0.0.3
+ network 172.16.10.4 0.0.0.3
+ network 172.16.10.0 0.0.0.3 
  no auto-summary
 exit
 do wr
@@ -272,3 +274,16 @@ do wr
 end 
 show ip dhcp pool
 show ip dhcp binding 
+
+enable
+config t
+router eigrp 1
+redistribute ospf 1 metric 10000 100 255 1 1500
+exit
+router ospf 1
+redistribute eigrp 1 subnets
+exit
+router ospf 1
+network 172.16.10.4 0.0.0.3 area 0
+network 172.16.10.0 0.0.0.3 area 0
+exit
