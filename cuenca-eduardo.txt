@@ -1,0 +1,263 @@
+! -------------------------------------------
+! ROUTER R1 (Conectado al tunnel y R2)
+! -------------------------------------------
+enable
+configure terminal
+interface GigabitEthernet0/0/1
+ ip address 192.168.3.1 255.255.255.252  ! Enlace a R2 (192.168.3.2)
+ no shutdown
+!
+! Configuración de enrutamiento
+router eigrp 1
+ network 192.168.3.0 0.0.0.3
+ network 172.16.10.0 0.0.0.3
+ redistribute ospf 1 metric 10000 100 255 1 1500
+ no auto-summary
+!
+router ospf 1
+ network 172.16.10.0 0.0.0.3 area 0
+ redistribute eigrp 1 subnets
+!
+end
+write memory
+
+! -------------------------------------------
+! ROUTER R2 (Conectado a R1 y R3)
+! -------------------------------------------
+enable
+configure terminal
+hostname R2-Cuenca
+!
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido - Router Cuenca R2
+-------------------------------------------------------------------------------------------------$
+!
+configure terminal
+interface GigabitEthernet0/0/0
+ ip address 192.168.3.2 255.255.255.252 
+ no shutdown
+interface Serial0/1/0
+ ip address 192.168.3.5 255.255.255.252  
+ clock rate 64000 
+ no shutdown
+interface GigabitEthernet0/0/1
+ no shutdown
+
+interface GigabitEthernet0/0/1.20
+ encapsulation dot1Q 20
+ ip address 192.168.3.65 255.255.255.192 
+
+interface GigabitEthernet0/0/1.30
+ encapsulation dot1Q 30
+ ip address 192.168.3.129 255.255.255.192  
+
+
+
+ Configuración DHCP
+ip dhcp excluded-address 192.168.3.65 192.168.3.70
+ip dhcp excluded-address 192.168.3.129 192.168.3.134
+!
+ip dhcp pool SEGURIDAD
+ network 192.168.3.64 255.255.255.192
+ default-router 192.168.3.65
+ dns-server 192.168.3.35
+!
+ip dhcp pool SOCIOCULTURAL
+ network 192.168.3.128 255.255.255.192
+ default-router 192.168.3.129
+ dns-server 192.168.3.35
+
+interface GigabitEthernet0/0/1.10
+ encapsulation dot1Q 10
+ ip address 192.168.3.193 255.255.255.224  
+
+ip dhcp pool ACADEMICO
+ network 192.168.3.192 255.255.255.224
+ default-router 192.168.3.193
+ dns-server 192.168.3.35
+ip dhcp excluded-address 192.168.3.193 192.168.3.198
+!
+! Configuración EIGRP
+router eigrp 1
+ network 192.168.3.0 0.0.0.3
+ network 192.168.3.4 0.0.0.3
+ network 192.168.3.64 0.0.0.63
+ network 192.168.3.128 0.0.0.63
+ no auto-summary
+!
+end
+write memory
+
+! -------------------------------------------
+! ROUTER R3 (Conectado a R2 y switches)
+! -------------------------------------------
+enable
+configure terminal
+hostname R3-Cuenca
+!
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido - Router Cuenca R3
+-------------------------------------------------------------------------------------------------$
+
+configure terminal
+interface Serial0/1/0
+ ip address 192.168.3.6 255.255.255.252  
+ no shutdown
+interface GigabitEthernet0/0/0
+ no shutdown
+
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.3.193 255.255.255.224  
+
+interface GigabitEthernet0/0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.3.225 255.255.255.240  
+
+
+
+
+ip dhcp excluded-address 192.168.3.193 192.168.3.198
+ip dhcp excluded-address 192.168.3.225 192.168.3.230
+
+ip dhcp pool ACADEMICO
+ network 192.168.3.192 255.255.255.224
+ default-router 192.168.3.193
+ dns-server 192.168.3.35
+
+ip dhcp pool PASTORAL
+ network 192.168.3.224 255.255.255.240
+ default-router 192.168.3.225
+ dns-server 192.168.3.35
+
+
+router eigrp 1
+ network 192.168.3.4 0.0.0.3
+ network 192.168.3.192 0.0.0.31
+ network 192.168.3.224 0.0.0.15
+ no auto-summary
+
+end
+write memory
+
+! -------------------------------------------
+! SWITCH R2 (S2-Cuenca)
+! -------------------------------------------
+enable
+configure terminal
+hostname S2-Cuenca
+!
+vlan 20
+ name SEGURIDAD
+!
+vlan 30
+ name SOCIOCULTURAL
+vlan 10
+ name ACADEMICO
+
+interface range FastEthernet0/1-5
+ switchport mode access
+ switchport access vlan 20
+!
+interface range FastEthernet0/6-8
+ switchport mode access
+ switchport access vlan 30
+
+
+interface range FastEthernet0/10-12
+ switchport mode access
+ switchport access vlan 10
+
+enable
+configure terminal
+
+
+interface GigabitEthernet0/1
+ no switchport mode access
+ switchport mode trunk 
+ switchport trunk allowed vlan 10,20,30
+end
+write memory
+
+configure terminal
+interface Vlan10
+ ip address 192.168.3.194 255.255.255.224  
+ no shutdown
+exit
+ip default-gateway 192.168.3.193  
+end
+write memory
+
+
+
+! -------------------------------------------
+! SWITCH R3 (S3-Cuenca)
+! -------------------------------------------
+enable
+configure terminal
+hostname S3-Cuenca
+
+vlan 10
+ name ACADEMICO
+
+vlan 40
+ name PASTORAL
+
+interface GigabitEthernet0/1
+switchport mode access
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40
+
+!
+interface range FastEthernet0/1-12
+ switchport mode access
+ switchport access vlan 10
+!
+interface range FastEthernet0/13-16
+ switchport mode access
+ switchport access vlan 40
+!
+end
+write memory
+
+enable
+configure terminal
+
+
+interface GigabitEthernet0/1
+ no switchport mode access
+ switchport mode trunk 
+ switchport trunk allowed vlan 10,40
+end
+write memory
+
+configure terminal
+interface Vlan10
+ ip address 192.168.3.194 255.255.255.224  
+ no shutdown
+exit
+ip default-gateway 192.168.3.193  
+end
+write memory
+
+! -------------------------------------------
+! PRUEBAS DE CONECTIVIDAD
+! -------------------------------------------
+! Desde VLAN Académico (S3):
+ping 192.168.3.35  ! DNS
+ping 192.168.3.65  ! VLAN Seguridad
+ping 192.168.3.225 ! Gateway Pastoral
+traceroute 172.16.10.2  ! Tunnel
+
+! Desde VLAN Seguridad (S2):
+ping 192.168.3.193  ! VLAN Académico
+ping 192.168.3.6    ! Interface R3
+
+! Verificaciones en routers:
+show ip route
+show ip eigrp neighbors
+show ip ospf neighbor
+show cdp neighbors
+ping 192.168.3.35 source gigabitEthernet0/0.10  ! Test con source específico

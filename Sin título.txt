@@ -1,0 +1,48 @@
+
+ME DA ESTE ERROR:
+
+Sending 5, 100-byte ICMP Echos to 192.168.3.35, timeout is 2 seconds:
+.
+%DUAL-5-NBRCHANGE: IP-EIGRP 1: Neighbor 192.168.3.1 (GigabitEthernet0/0/0) is down: retry limit exceeded
+.
+%DUAL-5-NBRCHANGE: IP-EIGRP 1: Neighbor 192.168.3.1 (GigabitEthernet0/0/0) is up: new adjacency
+...
+Success rate is 0 percent (0/5)
+
+
+
+
+
+
+
+
+enable
+config t
+hostname R2
+banner motd $
+-------------------------------------------------------------------------------------------------
+Ingreso No Permitido
+-------------------------------------------------------------------------------------------------$
+exit
+config t
+! Configuración de interfaces
+interface GigabitEthernet0/0/0
+ip address 192.168.3.2 255.255.255.252
+no shutdown
+exit
+interface GigabitEthernet0/0/1
+ip address 192.168.3.193 255.255.255.192
+no shutdown
+exit
+config t
+interface Serial0/1/0
+ip address 192.168.3.5 255.255.255.252
+no shutdown
+exit
+config t
+! Configuración de EIGRP
+router eigrp 1
+network 192.168.3.0 0.0.0.255
+
+write memory
+exit
